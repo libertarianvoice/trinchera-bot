@@ -1,0 +1,63 @@
+[project]
+name = "trinchera-bot"
+version = "1.0.0"
+description = "Bot de Telegram oficial de la Trinchera Libertaria - Libertarian Voice (@lv_trinchera_bot). 100% libertario, estilo Milei, anti-zurdos."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Libertarian Voice", email = "contacto@libertarianvoice.store"}
+]
+dependencies = [
+    # Core bot
+    "aiogram>=3.20.0",
+    # Grok API (chat + image generation)
+    "xai-sdk>=0.13.0",
+    # Config
+    "pydantic-settings>=2.5.0",
+    # Image processing for stickers
+    "pillow>=11.0.0",
+    # HTTP (for image downloads in stickers)
+    "httpx>=0.27.0",
+    # Utilities
+    "python-dotenv>=1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.9.0",
+    "mypy>=1.14.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trinchera_bot"]
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.9.0",
+    "mypy>=1.14.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

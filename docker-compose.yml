@@ -1,0 +1,14 @@
+version: "3.9"
+
+# NOTA: El bot ya NO requiere PostgreSQL (versión ligera sin DB).
+# Este docker-compose es opcional / legacy.
+# Para correr local: uv run python -m trinchera_bot.main (ver README)
+
+services:
+  # Ejemplo si querés correr el bot dentro de Docker (sin DB):
+  # bot:
+  #   build: .
+  #   env_file: .env
+  #   restart: unless-stopped
+
+# Sin volúmenes de postgres.
