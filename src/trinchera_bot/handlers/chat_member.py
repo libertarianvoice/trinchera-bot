@@ -1,22 +1,17 @@
 """
 Handler de eventos de miembros del chat (bienvenida exacta + my_chat_member).
-
 - welcome_new_member: vía ChatMemberUpdated (requiere bot admin en el grupo)
-- welcome_new_members_fallback: vía message.new_chat_members (más confiable en algunos casos)
-
 IMPORTANTE: El texto de bienvenida es EXACTO y está en constants.WELCOME_HTML.
 No modificar sin autorización.
 """
 import logging
 from aiogram import Router, Bot, F
 from aiogram.filters import IS_NOT_MEMBER, IS_MEMBER, ChatMemberUpdatedFilter
-from aiogram.types import ChatMemberUpdated, Message
-
+from aiogram.types import ChatMemberUpdated
 from trinchera_bot.constants import WELCOME_HTML
 from trinchera_bot.config import settings
 
 logger = logging.getLogger(__name__)
-
 router = Router(name="chat_member")
 
 
@@ -28,11 +23,9 @@ router = Router(name="chat_member")
 async def welcome_new_member(event: ChatMemberUpdated, bot: Bot) -> None:
     """
     Envía el mensaje de bienvenida EXACTO cuando alguien se une a la Trinchera.
-
     Usa el texto oficial de Libertarian Voice. Sin base de datos.
     """
     user = event.new_chat_member.user
-
     try:
         await bot.send_message(
             chat_id=event.chat.id,
@@ -67,34 +60,6 @@ async def bot_added_to_group(event: ChatMemberUpdated, bot: Bot) -> None:
             "(eliminar mensajes, banear usuarios y fijar mensajes) para funcionar correctamente.",
             parse_mode="HTML",
         )
-
-
-@router.message(
-    F.chat.type.in_({"group", "supergroup"}),
-    F.new_chat_members,
-)
-async def welcome_new_members_fallback(message: Message, bot: Bot) -> None:
-    """
-    Fallback de bienvenida usando el mensaje de servicio 'new_chat_members'.
-    Garantiza que la bienvenida funcione en grupos incluso si el evento chat_member
-    no se entrega (ej. permisos del bot, configuraciones de privacidad).
-    """
-    for user in message.new_chat_members or []:
-        if user.is_bot:
-            continue
-        try:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text=WELCOME_HTML,
-                parse_mode="HTML",
-                disable_web_page_preview=True,
-            )
-            logger.info(
-                f"Bienvenida (fallback) enviada a nuevo miembro: {user.id} ({user.username or user.first_name})"
-            )
-            break  # una sola bienvenida por evento de servicio
-        except Exception as e:
-            logger.error(f"Error enviando bienvenida fallback: {e}")
 
 
 # TODO: agregar handler para cuando un admin promueve/degrada al bot
